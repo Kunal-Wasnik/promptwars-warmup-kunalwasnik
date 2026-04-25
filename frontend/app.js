@@ -5,8 +5,23 @@
 
 const state = {
     currentTopic: '',
-    difficulty: 'beginner'
+    difficulty: 'beginner',
+    lessonText: ''
 };
+
+// ── Gamification System (Local Storage) ────────────────────────────────────
+let userXP = parseInt(localStorage.getItem('flowLearnXP') || '0');
+
+function updateGamificationUI() {
+    const level = Math.floor(userXP / 1000) + 1;
+    const titles = ["Curious Novice", "Apprentice Scholar", "Knowledge Adept", "Subject Master", "Grandmaster of Learning"];
+    const title = titles[Math.min(level - 1, titles.length - 1)];
+    
+    document.getElementById('user-xp').textContent = userXP;
+    document.getElementById('user-level').textContent = level;
+    document.getElementById('user-title').textContent = title;
+    document.getElementById('next-level-xp').textContent = level * 1000;
+}
 
 // ── Screen Management ───────────────────────────────────────────────────────
 function switchScreen(screenId) {
@@ -145,8 +160,19 @@ function renderFeedback(data) {
     lessonContainer.innerHTML = html;
     document.getElementById('next-step-text').textContent = data.next_steps;
 
-    // Save text for Voice API (strip markdown characters for clean reading)
+    // Save text for Voice API
     state.lessonText = data.micro_lesson.replace(/\*\*|\#\#\#|\*/g, '');
+
+    // Award XP and Level Up!
+    const gainedXP = data.mastery_score * 10;
+    userXP += gainedXP;
+    localStorage.setItem('flowLearnXP', userXP);
+    updateGamificationUI();
+    
+    // Tiny toast notification for XP
+    setTimeout(() => {
+        alert(`🌟 You earned +${gainedXP} XP for your explanation!`);
+    }, 500);
 }
 
 // ── Web Speech API (WOW Factor) ──────────────────────────────────────────────
@@ -180,5 +206,5 @@ function resetApp() {
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
-    // Initial state is Setup
+    updateGamificationUI();
 });

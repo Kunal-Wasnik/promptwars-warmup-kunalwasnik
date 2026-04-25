@@ -13,6 +13,18 @@
 </head>
 <body>
     <div id="app">
+        <!-- ── GAMIFICATION HEADER ──────────────────────────────────────────── -->
+        <div id="gamification-bar" class="glass-card fade-in" style="display: flex; justify-content: space-between; padding: 1rem 2rem; margin-bottom: 2rem; align-items: center; background: rgba(99, 102, 241, 0.15); border-color: var(--primary);">
+            <div style="font-size: 1.1rem;">
+                <i class="fas fa-star" style="color: #fbbf24; margin-right: 0.5rem;"></i> 
+                Level <span id="user-level" style="font-weight: 800;">1</span>: 
+                <span id="user-title" style="color: #f472b6; font-weight: 600;">Curious Novice</span>
+            </div>
+            <div style="font-size: 0.9rem; color: var(--text-dim);">
+                XP: <span id="user-xp" style="color: white; font-weight: bold;">0</span> / <span id="next-level-xp">1000</span>
+            </div>
+        </div>
+
         <!-- ── SETUP SCREEN ─────────────────────────────────────────────────── -->
         <section id="setup-screen" class="screen active">
             <header>
