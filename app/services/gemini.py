@@ -176,17 +176,35 @@ async def analyze_explanation(topic: str, explanation: str, difficulty: str) -> 
     )
     mentor_data = await _run_agent(_mentor, mentor_prompt)
 
-    # Normalize next_steps to always be a string
-    next_steps = mentor_data.get("next_steps", "")
+    # Robust extraction with defaults to prevent 500 errors
+    def _safe_list(data, key, fallback=[]):
+        val = data.get(key, fallback)
+        return val if isinstance(val, list) else fallback
+
+    # Stage 3: Build response
+    # We prefer mentor data but fall back to evaluator data if needed
+    correct = _safe_list(mentor_data, "correct", _safe_list(eval_data, "correct"))
+    missing = _safe_list(mentor_data, "missing", _safe_list(eval_data, "missing"))
+    misconceptions = _safe_list(mentor_data, "misconceptions", _safe_list(eval_data, "misconceptions"))
+    
+    # Mastery score safety
+    raw_score = mentor_data.get("mastery_score", 0)
+    try:
+        mastery_score = int(raw_score)
+    except (TypeError, ValueError):
+        mastery_score = 50
+
+    # Next steps safety
+    next_steps = mentor_data.get("next_steps", "Continue practicing your explanation!")
     if isinstance(next_steps, list):
         next_steps = " ".join(next_steps)
 
     return GapAnalysis(
-        correct=mentor_data.get("correct", eval_data.get("correct", [])),
-        missing=mentor_data.get("missing", eval_data.get("missing", [])),
-        misconceptions=mentor_data.get("misconceptions", eval_data.get("misconceptions", [])),
-        micro_lesson=mentor_data.get("micro_lesson", ""),
-        mastery_score=int(mentor_data.get("mastery_score", 0)),
-        encouragement=mentor_data.get("encouragement", ""),
-        next_steps=next_steps,
+        correct=correct,
+        missing=missing,
+        misconceptions=misconceptions,
+        micro_lesson=str(mentor_data.get("micro_lesson", "Keep studying the core concepts to master this topic.")),
+        mastery_score=mastery_score,
+        encouragement=str(mentor_data.get("encouragement", "You're making progress!")),
+        next_steps=str(next_steps),
     )
