@@ -34,20 +34,20 @@
 
             <div class="glass-card fade-in">
                 <div class="form-group">
-                    <label>What do you want to master today?</label>
-                    <input type="text" id="topic-input" placeholder="e.g. Quantum Entanglement, Stoicism, Photosynthesis...">
+                    <label for="topic-input">What do you want to learn?</label>
+                    <input type="text" id="topic-input" aria-label="Enter the topic you want to learn" placeholder="e.g., Quantum Physics, Photosynthesis, Machine Learning...">
                 </div>
                 
                 <div class="form-group">
                     <label>Your current level</label>
-                    <select id="difficulty-select">
+                    <select id="difficulty-select" aria-label="Select your current proficiency level">
                         <option value="beginner">Beginner</option>
                         <option value="intermediate">Intermediate</option>
                         <option value="advanced">Advanced</option>
                     </select>
                 </div>
 
-                <button class="btn btn-primary" onclick="startSession()">
+                <button id="start-btn" class="btn btn-primary" aria-label="Start Learning Path" onclick="startSession()">
                     Start Learning Path
                 </button>
             </div>
@@ -84,12 +84,12 @@
                 <p id="feynman-prompt" style="margin-bottom: 1.5rem; font-style: italic; color: var(--text-dim);"></p>
                 
                 <div class="form-group">
-                    <label>Your Explanation</label>
-                    <textarea id="explanation-input" rows="6" placeholder="Explain it like you're teaching a 10-year old..."></textarea>
+                    <label for="explanation-input">Your Explanation</label>
+                    <textarea id="explanation-input" aria-label="Type your explanation here" rows="6" placeholder="Explain the concept simply..."></textarea>
                 </div>
 
-                <button class="btn btn-primary" onclick="submitExplanation()">
-                    Evaluate My Mastery
+                <button id="submit-btn" class="btn btn-primary" aria-label="Submit for Feedback" onclick="submitExplanation()">
+                    Submit for Feedback
                 </button>
             </div>
         </section>
