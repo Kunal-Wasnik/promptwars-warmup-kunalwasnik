@@ -222,7 +222,7 @@ async def _run_agent(agent: adk.Agent, prompt: str) -> dict:
     if start == -1 or end == -1:
         raise ValueError(f"Agent {agent.name} did not return a JSON object. Got: {text[:200]}")
 
-    return json.loads(text[start:end + 1])
+    return json.loads(text[start:end + 1], strict=False)
 
 
 # ── Public API ────────────────────────────────────────────────────────────────
