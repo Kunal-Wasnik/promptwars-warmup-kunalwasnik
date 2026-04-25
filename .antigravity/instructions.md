@@ -1,5 +1,14 @@
 # Antigravity Hackathon Mode: FastAPI MVP
 
+> ⚠️ **CRITICAL — Gemini Model Versions (verified live, April 2026)**
+> - `gemini-1.5-*` → **DECOMMISSIONED**. Never use.
+> - `gemini-2.0-flash` → Stable, widely available.
+> - `gemini-2.5-flash` / `gemini-2.5-pro` → Latest 2.x stable.
+> - `gemini-3-flash-preview` → Latest Gemini 3 (FREE TIER ✅ — use this as default)
+> - `gemini-3-pro-preview` → Gemini 3 Pro (heavier, use for complex reasoning only)
+> - `gemini-3.1-flash-lite-preview` → Lightest/fastest Gemini 3 (best for free tier)
+> - **DEFAULT for hackathon**: `gemini-3-flash-preview` (fast + latest + free tier friendly)
+
 ## 1. Core Directives
 - **Speed over Perfection**: Do not spend time on perfect variable naming or complex abstractions. Focus on working code.
 - **Vibe Coding Focus**: Leverage Antigravity to bridge the gap between intent and code. Show, don't just tell, how AI built the solution.

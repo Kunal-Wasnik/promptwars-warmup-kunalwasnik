@@ -1,36 +1,80 @@
+"""
+FlowLearn — FastAPI Application Entry Point
+Personalized Learning Companion powered by Google Gemini 3 AI.
+"""
+import logging
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
 import uvicorn
-import os
 
-app = FastAPI(title="Hackathon MVP — Template")
+from app.config import settings
+from app.routers import learn
+from app.models import HealthResponse
 
-# Enable CORS for frontend development
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
+logger = logging.getLogger(__name__)
+
+app = FastAPI(
+    title="FlowLearn API",
+    description=(
+        "An intelligent learning companion that personalizes content using the Feynman Technique "
+        "and Google Gemini 3 AI. Helps users learn new concepts by analyzing their explanations "
+        "and providing targeted, adaptive micro-lessons."
+    ),
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    contact={"name": "FlowLearn Team", "url": "https://github.com"},
+)
+
+# ── Middleware ───────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
-# Mount the frontend directory to serve CSS/JS/Images
-# Note: Ensure the 'frontend' folder exists in the project root
-frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
-app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+# ── Routers ──────────────────────────────────────────────────────────────────
+app.include_router(learn.router)
 
-@app.get("/")
-async def read_index():
-    return FileResponse(os.path.join(frontend_path, "index.html"))
+# ── Static Files ─────────────────────────────────────────────────────────────
+if os.path.exists(settings.frontend_path):
+    app.mount("/static", StaticFiles(directory=settings.frontend_path), name="static")
+    logger.info("Frontend mounted from: %s", settings.frontend_path)
 
-@app.get("/api/health")
-async def health_check():
-    return {"status": "ok", "message": "API is online"}
+
+# ── Core Routes ──────────────────────────────────────────────────────────────
+@app.get("/", include_in_schema=False)
+async def serve_frontend() -> FileResponse:
+    """Serve the FlowLearn frontend application."""
+    index_file = os.path.join(settings.frontend_path, "index.html")
+    if os.path.exists(index_file):
+        return FileResponse(index_file, media_type="text/html")
+    return FileResponse(index_file)
+
+
+@app.get(
+    "/api/health",
+    response_model=HealthResponse,
+    tags=["system"],
+    summary="Health check",
+    description="Verify the API is running and correctly configured.",
+)
+async def health_check() -> HealthResponse:
+    """Return the current health and configuration status of the API."""
+    return HealthResponse(
+        status="ok",
+        message="FlowLearn API is online",
+        version="1.0.0",
+        model=settings.gemini_model,
+        environment="development" if settings.debug else "production",
+    )
+
 
 if __name__ == "__main__":
-    # This allows us to run the app from the root directory easily
-    import sys
-    sys.path.append(os.path.dirname(os.path.dirname(__file__)))
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
