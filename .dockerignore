@@ -1,0 +1,14 @@
+.git
+.venv
+.venv_new
+__pycache__
+*.pyc
+.env
+.antigravity
+artifacts
+tests
+test_*.py
+emergency_run.ps1
+run.ps1
+pyproject.toml
+uv.lock
