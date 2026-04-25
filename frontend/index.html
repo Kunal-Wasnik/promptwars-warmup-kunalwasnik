@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -92,6 +93,9 @@
                 </div>
 
                 <h2>Mentor Feedback</h2>
+                <button id="read-aloud-btn" class="btn" style="background: var(--glass); color: white; padding: 0.5rem 1rem; margin-bottom: 1rem; border: 1px solid var(--primary);" onclick="readAloud()">
+                    <i class="fas fa-volume-up"></i> Listen to Mentor
+                </button>
                 <div id="lesson-body" class="lesson-content">
                     <!-- Lesson rendered here -->
                 </div>

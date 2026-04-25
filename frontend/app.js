@@ -125,6 +125,16 @@ function renderLinks(links) {
 function renderFeedback(data) {
     document.getElementById('mastery-value').textContent = `${data.mastery_score}%`;
     
+    // Confetti for high scores!
+    if (data.mastery_score >= 80) {
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#6366f1', '#ec4899', '#f8fafc']
+        });
+    }
+
     const lessonContainer = document.getElementById('lesson-body');
     // Basic Markdown conversion for bold and lists
     let html = data.micro_lesson
@@ -134,9 +144,35 @@ function renderFeedback(data) {
     
     lessonContainer.innerHTML = html;
     document.getElementById('next-step-text').textContent = data.next_steps;
+
+    // Save text for Voice API (strip markdown characters for clean reading)
+    state.lessonText = data.micro_lesson.replace(/\*\*|\#\#\#|\*/g, '');
+}
+
+// ── Web Speech API (WOW Factor) ──────────────────────────────────────────────
+function readAloud() {
+    if (!('speechSynthesis' in window)) {
+        alert("Sorry, your browser doesn't support text to speech!");
+        return;
+    }
+    window.speechSynthesis.cancel(); // Stop any ongoing speech
+    
+    const utterance = new SpeechSynthesisUtterance(state.lessonText);
+    utterance.rate = 0.95; // Slightly slower for teaching
+    utterance.pitch = 1.05; // Slightly engaging pitch
+    
+    const btn = document.getElementById('read-aloud-btn');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Speaking...';
+    
+    utterance.onend = () => {
+        btn.innerHTML = '<i class="fas fa-volume-up"></i> Listen to Mentor';
+    };
+    
+    window.speechSynthesis.speak(utterance);
 }
 
 function resetApp() {
+    window.speechSynthesis.cancel(); // Stop speech if they leave
     document.getElementById('topic-input').value = '';
     document.getElementById('explanation-input').value = '';
     switchScreen('setup');
