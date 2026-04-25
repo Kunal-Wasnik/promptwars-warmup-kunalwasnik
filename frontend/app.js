@@ -5,7 +5,7 @@
 
 const state = {
     currentTopic: '',
-    difficulty: 'Beginner'
+    difficulty: 'beginner'
 };
 
 // ── Screen Management ───────────────────────────────────────────────────────
