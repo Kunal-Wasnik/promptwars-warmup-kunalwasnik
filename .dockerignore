@@ -10,5 +10,3 @@ tests
 test_*.py
 emergency_run.ps1
 run.ps1
-pyproject.toml
-uv.lock
