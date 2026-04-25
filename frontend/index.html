@@ -3,109 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlowLearn | Personalized Learning Companion</title>
+    <title>FlowLearn | AI Personal Mentor</title>
+    <link rel="stylesheet" href="/static/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <main class="app-container">
-        <!-- SCREEN 1: Topic Selection -->
-        <section id="screen-setup" class="screen active">
-            <div class="glass-card main-card">
-                <header>
-                    <h1 class="gradient-text">FlowLearn</h1>
-                    <p class="subtitle">Master any concept by explaining it in your own words.</p>
-                </header>
-                
-                <form id="setup-form" aria-label="Start Learning Session">
-                    <div class="input-group">
-                        <label for="topic-input">What do you want to learn?</label>
-                        <input type="text" id="topic-input" placeholder="e.g. Quantum Computing, Photosynthesis..." required aria-required="true">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="difficulty-select">Your Current Level</label>
-                        <select id="difficulty-select" aria-label="Difficulty Level">
-                            <option value="beginner">Beginner</option>
-                            <option value="intermediate">Intermediate</option>
-                            <option value="advanced">Advanced</option>
-                        </select>
-                    </div>
-                    
-                    <button type="submit" id="start-btn" class="btn-primary">
-                        <span class="btn-text">Start Learning</span>
-                        <span class="loader hidden" aria-hidden="true"></span>
-                    </button>
-                </form>
-            </div>
-        </section>
-
-        <!-- SCREEN 2: Learning & Analysis -->
-        <section id="screen-learn" class="screen hidden">
-            <header class="top-bar">
-                <h2 id="active-topic" class="gradient-text">Topic</h2>
-                <button id="reset-btn" class="btn-text">← New Topic</button>
+    <div id="app">
+        <!-- ── SETUP SCREEN ─────────────────────────────────────────────────── -->
+        <section id="setup-screen" class="screen active">
+            <header>
+                <h1>FlowLearn</h1>
+                <p class="subtitle">Master any topic using the Feynman Technique and AI.</p>
             </header>
 
-            <div class="dashboard-grid">
-                <!-- Left Column: Context -->
-                <div class="glass-card context-panel">
-                    <h3>Overview</h3>
-                    <p id="topic-overview" aria-live="polite">Loading...</p>
-                    
-                    <h3 class="mt-4">Key Concepts</h3>
-                    <ul id="key-concepts-list" aria-label="Key Concepts"></ul>
-
-                    <div id="resources-section" class="mt-4 hidden">
-                        <h3>Recommended Resources</h3>
-                        <ul id="links-list" class="links-list"></ul>
-                    </div>
+            <div class="glass-card fade-in">
+                <div class="form-group">
+                    <label>What do you want to master today?</label>
+                    <input type="text" id="topic-input" placeholder="e.g. Quantum Entanglement, Stoicism, Photosynthesis...">
+                </div>
+                
+                <div class="form-group">
+                    <label>Your current level</label>
+                    <select id="difficulty-select">
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Expert">Expert</option>
+                    </select>
                 </div>
 
-                <!-- Right Column: Workspace -->
-                <div class="workspace-panel">
-                    <div class="glass-card">
-                        <h3 id="suggested-prompt">Explain it...</h3>
-                        <textarea id="explanation-input" rows="8" placeholder="Type your explanation here. Don't worry about being perfect..." aria-label="Your explanation"></textarea>
-                        <button id="analyze-btn" class="btn-primary mt-4">
-                            <span class="btn-text">Analyze Explanation</span>
-                            <span class="loader hidden" aria-hidden="true"></span>
-                        </button>
-                    </div>
+                <button class="btn btn-primary" onclick="startSession()">
+                    Start Learning Path
+                </button>
+            </div>
+        </section>
 
-                    <!-- Feedback Area (Initially hidden) -->
-                    <div id="feedback-panel" class="glass-card feedback-panel hidden" aria-live="assertive">
-                        <div class="score-header">
-                            <h3>Mastery Score</h3>
-                            <div class="score-circle">
-                                <span id="score-value">0</span>%
-                            </div>
-                        </div>
-                        
-                        <p id="feedback-encouragement" class="encouragement-text"></p>
-                        
-                        <div class="feedback-grid">
-                            <div class="feedback-box success">
-                                <h4>✅ Got it Right</h4>
-                                <ul id="feedback-correct"></ul>
-                            </div>
-                            <div class="feedback-box warning">
-                                <h4>⚠️ Missing Points</h4>
-                                <ul id="feedback-missing"></ul>
-                            </div>
-                        </div>
+        <!-- ── LOADING SCREEN ───────────────────────────────────────────────── -->
+        <section id="loading-screen" class="screen hidden">
+            <div class="score-container" style="margin-top: 100px;">
+                <span class="loader"></span>
+                <p id="loading-text" class="subtitle" style="margin-top: 20px;">Architecting your path...</p>
+            </div>
+        </section>
 
-                        <div class="micro-lesson">
-                            <h4>📚 Micro-Lesson</h4>
-                            <p id="feedback-lesson"></p>
-                        </div>
+        <!-- ── LEARN SCREEN ─────────────────────────────────────────────────── -->
+        <section id="learn-screen" class="screen hidden">
+            <div class="glass-card fade-in">
+                <h2 class="topic-name">Topic</h2>
+                <p id="overview-text" class="subtitle"></p>
+                
+                <div id="concepts-grid" class="grid-cards">
+                    <!-- Concepts rendered here as cards -->
+                </div>
+            </div>
+
+            <div id="resources-section" class="glass-card fade-in">
+                <h2>Recommended Resources</h2>
+                <div id="links-list">
+                    <!-- Links rendered here -->
+                </div>
+            </div>
+
+            <div class="glass-card fade-in">
+                <h2>The Feynman Challenge</h2>
+                <p id="feynman-prompt" style="margin-bottom: 1.5rem; font-style: italic; color: var(--text-dim);"></p>
+                
+                <div class="form-group">
+                    <label>Your Explanation</label>
+                    <textarea id="explanation-input" rows="6" placeholder="Explain it like you're teaching a 10-year old..."></textarea>
+                </div>
+
+                <button class="btn btn-primary" onclick="submitExplanation()">
+                    Evaluate My Mastery
+                </button>
+            </div>
+        </section>
+
+        <!-- ── FEEDBACK SCREEN ──────────────────────────────────────────────── -->
+        <section id="feedback-screen" class="screen hidden">
+            <div class="glass-card fade-in">
+                <div class="score-container">
+                    <div class="score-circle">
+                        <span id="mastery-value">0%</span>
                     </div>
+                    <p class="subtitle">Mastery Score</p>
+                </div>
+
+                <h2>Mentor Feedback</h2>
+                <div id="lesson-body" class="lesson-content">
+                    <!-- Lesson rendered here -->
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h3>Next Step</h3>
+                    <p id="next-step-text" class="subtitle"></p>
+                </div>
+
+                <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                    <button class="btn" style="background: var(--glass); color: white; flex: 1;" onclick="resetApp()">
+                        New Topic
+                    </button>
+                    <button class="btn btn-primary" style="flex: 1;" onclick="switchScreen('learn')">
+                        Try Again
+                    </button>
                 </div>
             </div>
         </section>
-    </main>
+    </div>
+
     <script src="/static/app.js"></script>
 </body>
 </html>

@@ -26,52 +26,58 @@ logger = logging.getLogger(__name__)
 _session_service = InMemorySessionService()
 
 # ── Agent Instructions ────────────────────────────────────────────────────────
-_ARCHITECT_INSTRUCTION = """You are a curriculum designer AI.
-Given a topic and difficulty level, produce a structured learning overview.
+_ARCHITECT_INSTRUCTION = """You are the Lead Curriculum Architect for FlowLearn.
+Your goal is to transform any complex topic into a clear, engaging learning path.
+
+TASKS:
+1. Provide a fascinating 2-3 sentence overview of the topic.
+2. Identify 5 foundational concepts that are crucial for mastery.
+3. Formulate a 'suggested_prompt' that challenges the user to explain the topic using the Feynman Technique.
+4. Use the Search Tool to find 2-3 high-quality educational resources.
 
 RESPOND ONLY with a valid JSON object using EXACTLY this structure (no extra keys, no markdown fences):
 {
   "topic": "<topic name>",
   "difficulty": "<difficulty level>",
-  "overview": "<2-3 sentence intro to the topic>",
+  "overview": "<fascinating overview>",
   "key_concepts": ["<concept 1>", "<concept 2>", "<concept 3>", "<concept 4>", "<concept 5>"],
-  "suggested_prompt": "<one sentence prompt asking the student to explain the topic in their own words>",
+  "suggested_prompt": "<Feynman Challenge prompt>",
   "links": [
-    {"title": "<page title>", "url": "<full url>"},
     {"title": "<page title>", "url": "<full url>"}
   ]
 }
-
-USE THE SEARCH TOOL to find 2-3 high-quality educational resources (e.g. Wikipedia, Khan Academy, Coursera, official docs) for this topic. Include their titles and URLs in the 'links' field.
 """
 
-_EVALUATOR_INSTRUCTION = """You are a Feynman Technique evaluator AI.
-Given a student's explanation of a topic, identify what they got right, what's missing, and any misconceptions.
+_EVALUATOR_INSTRUCTION = """You are the Feynman Mastery Evaluator.
+Analyze the student's explanation with precision. Identify scientific accuracy, missing technical terms, and subtle misconceptions.
 
 RESPOND ONLY with a valid JSON object using EXACTLY this structure (no extra keys, no markdown fences):
 {
   "topic": "<topic name>",
   "difficulty": "<difficulty level>",
-  "explanation": "<the original explanation>",
-  "correct": ["<correct point 1>", "<correct point 2>"],
-  "missing": ["<missing concept 1>", "<missing concept 2>"],
-  "misconceptions": ["<misconception 1>"]
+  "explanation": "<original text>",
+  "correct": ["<precise correct point>"],
+  "missing": ["<critical missing term or concept>"],
+  "misconceptions": ["<identified misconception>"]
 }"""
 
-_MENTOR_INSTRUCTION = """You are an adaptive mentor AI.
-Given an analysis of a student's explanation (correct points, missing concepts, misconceptions), create a micro-lesson and score.
+_MENTOR_INSTRUCTION = """You are the Adaptive Learning Mentor.
+Your mission is to fill the knowledge gaps identified by the Evaluator with a rich, structured micro-lesson.
+
+TASKS:
+1. Validate the user's progress.
+2. Explain the missing concepts using vivid analogies and clear examples.
+3. Use Markdown (bolding, lists, headings) to make the lesson highly readable.
 
 RESPOND ONLY with a valid JSON object using EXACTLY this structure (no extra keys, no markdown fences):
 {
-  "topic": "<topic name>",
-  "difficulty": "<difficulty level>",
   "correct": ["<keep from input>"],
   "missing": ["<keep from input>"],
   "misconceptions": ["<keep from input>"],
-  "micro_lesson": "<3 sentences covering only the gaps and correcting misconceptions, adapted to difficulty level>",
-  "mastery_score": <integer 0-100>,
-  "encouragement": "<one warm, personalized sentence of encouragement>",
-  "next_steps": "<one specific action for the student to take next>"
+  "micro_lesson": "<rich markdown content with headings and analogies>",
+  "mastery_score": <int 0-100>,
+  "encouragement": "<personalized motivational message>",
+  "next_steps": "<specific actionable advice>"
 }"""
 
 # ── Agent Factory ─────────────────────────────────────────────────────────────
